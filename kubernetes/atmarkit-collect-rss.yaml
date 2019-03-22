@@ -1,0 +1,38 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    run: atmarkit-collect-rss
+  name: atmarkit-collect-rss
+spec:
+  concurrencyPolicy: Allow
+  jobTemplate:
+    metadata:
+    spec:
+      completions: 1
+      parallelism: 1
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            run: atmarkit-collect-rss
+        spec:
+          containers:
+          - image: bbrfkr0129/rss-collect-info
+            name: atmarkit-collect-rss
+            env:
+            - name: RSS_URL
+              value: https://rss.itmedia.co.jp/rss/2.0/ait.xml
+            - name: SLACK_WEBHOOK_URL
+              value: <slack incomming webhook url>
+            - name: SERACH_STRINGS
+              value: <search strings (comma separated)>
+            - name: REDIS_HOST
+              value: rss-collect-info-data
+            - name: REDIS_PORT 
+              value: "6379"
+            - name: EXPIRE_SECONDS
+              value: "2592000"
+            resources: {}
+          restartPolicy: Never
+  schedule: '*/5 * * * *'

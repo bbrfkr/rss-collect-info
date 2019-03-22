@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: rss-collect-info-data
+  name: rss-collect-info-data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: rss-collect-info-data
+  template:
+    metadata:
+      labels:
+        run: rss-collect-info-data
+    spec:
+      containers:
+      - image: redis:5.0-alpine3.9
+        name: redis
+        resources: {}
+        volumeMounts:
+        - name: redis-collect-info-data
+          mountPath: /data
+      volumes:
+      - name: redis-collect-info-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: rss-collect-info-data
+  name: rss-collect-info-data
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    run: rss-collect-info-data
